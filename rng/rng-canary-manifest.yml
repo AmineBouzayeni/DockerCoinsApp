@@ -1,0 +1,39 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: rng-canary-service
+spec:
+  type: NodePort
+  selector:
+    app: rng-canary
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30002
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rng-deployment-canary
+  labels:
+    app: rng-canary
+spec:
+  replicas: __REPLICAS__
+  selector:
+    matchLabels:
+      app: rng-canary
+  template:
+    metadata:
+      labels:
+        app: rng-canary
+    spec:
+      containers:
+      - name: rng
+        image: mbouzayeni/rng:__TAG__
+        ports:
+        - containerPort: 80
+      nodeSelector:
+        app: test  
