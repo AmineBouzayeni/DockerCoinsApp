@@ -1,5 +1,5 @@
-name: Dockercoins backend CI/CD
-run-name: Dockercoins backend CI/CD
+name: Dockercoins app CI/CD
+run-name: Dockercoins app CI/CD
 on: [push]
 env:
   CLUSTER_NAME: dockercoins-cluster-teo
@@ -206,7 +206,7 @@ jobs:
             echo "Smoke test against the canary deployment failed againt / endpoint with code ${response}"
             exit 1
           else
-            echo "The smoke tests were passed"  
+            echo "The smoke test againt / passed"  
         fi
         response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/json)
         if [[ $response != 200 ]]
@@ -214,7 +214,7 @@ jobs:
             echo "Smoke test against the canary deployment failed againt /json endpoint with code ${response}"
             exit 1
           else
-            echo "The smoke tests were passed"  
+            echo "The smoke test against /json passed"  
         fi
 
     - name: Update image tag & the number of canary replicas to 0 to delete it
@@ -227,9 +227,10 @@ jobs:
         TAG: ${{ needs.BuildScanAndPushImage.outputs.imageTag }}
         REPLICAS: 0
            
-    - name: Delete rng-canary
+    - name: Delete canary pods
       run: |
         kubectl apply -f hasher/hasher-canary-manifest-delete.yml 
         kubectl apply -f rng/rng-canary-manifest-delete.yml 
         kubectl apply -f redis_server/redis-canary-manifest-delete.yml 
         kubectl apply -f worker/worker-canary-manifest-delete.yml
+        kubectl apply -f front/webui-canary-manifest-delete.yml
