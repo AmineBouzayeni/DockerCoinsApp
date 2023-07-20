@@ -1,2 +1,2 @@
-# DockerCoinsApp
-DockerCoins Application Repository
+# DockerCoinsFront
+Front end of DockerCoins Application.
