@@ -4,8 +4,7 @@
   "description": "Front end of DockerCoins Application.",
   "main": "webui.js",
   "scripts": {
-    "start": "node webui.js",
-    "test": "jest"
+    "start": "node webui.js"
   },
   "author": "",
   "license": "ISC",

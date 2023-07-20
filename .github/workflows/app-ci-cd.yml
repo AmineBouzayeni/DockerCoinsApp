@@ -110,7 +110,7 @@ jobs:
       - name: Build and push the webui Docker image
         uses: docker/build-push-action@v4
         with:
-          file: webui/Dockerfile
+          file: front/Dockerfile
           push: true
           tags: |
             mbouzayeni/webui:${{ steps.calculate_tag.outputs.tag }}
@@ -152,12 +152,12 @@ jobs:
         cp rng/rng-canary-manifest.yml rng/rng-canary-manifest-delete.yml
         cp redis_server/redis-canary-manifest.yml redis_server/redis-canary-manifest-delete.yml
         cp worker/worker-canary-manifest.yml worker/worker-canary-manifest-delete.yml
-        cp webui/webui-canary-manifest.yml webui/webui-canary-manifest-delete.yml
+        cp front/webui-canary-manifest.yml front/webui-canary-manifest-delete.yml
 
     - name: Update the image tag & the number of canary replicas to 1
       uses: cschleiden/replace-tokens@v1
       with:
-        files: '["hasher/hasher-canary-manifest.yml", "rng/rng-canary-manifest.yml", "redis_server/redis-canary-manifest.yml", "worker/worker-canary-manifest.yml", "webui/webui-canary-manifest.yml"]'
+        files: '["hasher/hasher-canary-manifest.yml", "rng/rng-canary-manifest.yml", "redis_server/redis-canary-manifest.yml", "worker/worker-canary-manifest.yml", "front/webui-canary-manifest.yml"]'
         tokenPrefix: __
         tokenSuffix: __
       env:
@@ -170,7 +170,7 @@ jobs:
         kubectl apply -f rng/rng-canary-manifest.yml
         kubectl apply -f redis_server/redis-canary-manifest.yml
         kubectl apply -f worker/worker-canary-manifest.yml
-        kubectl apply -f webui/webui-canary-manifest.yml
+        kubectl apply -f front/webui-canary-manifest.yml
 
     - name: Replace the URI in the test file
       uses: cschleiden/replace-tokens@v1
@@ -189,7 +189,6 @@ jobs:
       run: |
         echo "Installing some prerequisite to run tests"
         pip install pytest redis
-        npm i jest supertest
 
         echo "Running Smoke Tests for the Hasher component"
         ruby hasher/tests/smoke_test.rb
@@ -201,7 +200,22 @@ jobs:
         cd ../rng && pytest
 
         echo "Running Smoke Tests on the Webui component"
-        cd ../webui && npm run test
+        response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/)
+        if [[ $response != 200 ]]
+          then
+            echo "Smoke test against the canary deployment failed againt / endpoint"
+            exit 1
+          else
+            echo "The smoke tests were passed"  
+        fi
+        response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/json)
+        if [[ $response != 200 ]]
+          then
+            echo "Smoke test against the canary deployment failed againt /json endpoint"
+            exit 1
+          else
+            echo "The smoke tests were passed"  
+        fi
 
     - name: Update image tag & the number of canary replicas to 0 to delete it
       uses: cschleiden/replace-tokens@v1
