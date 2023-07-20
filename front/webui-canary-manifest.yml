@@ -33,7 +33,7 @@ spec:
       containers:
       - name: webui
         image: mbouzayeni/webui:__TAG__
-        command: ["SRV_NAME=redis-canary-service" "npm", "start"]
+        command: ["npm", "--srvname=redis-canary-service", "start"]
         ports:
         - containerPort: 80
       nodeSelector:

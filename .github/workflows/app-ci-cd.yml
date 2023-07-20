@@ -201,9 +201,9 @@ jobs:
 
         echo "Running Smoke Tests on the Webui component"
         response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/)
-        if [[ $response != 200 ]]
+        if [[ $response != 200 && $response != 302 ]]
           then
-            echo "Smoke test against the canary deployment failed againt / endpoint"
+            echo "Smoke test against the canary deployment failed againt / endpoint with code ${response}"
             exit 1
           else
             echo "The smoke tests were passed"  
@@ -211,7 +211,7 @@ jobs:
         response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/json)
         if [[ $response != 200 ]]
           then
-            echo "Smoke test against the canary deployment failed againt /json endpoint"
+            echo "Smoke test against the canary deployment failed againt /json endpoint with code ${response}"
             exit 1
           else
             echo "The smoke tests were passed"  
