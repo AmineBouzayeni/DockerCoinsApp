@@ -17,8 +17,8 @@ spec:
       containers:
       - name: worker
         image: mbouzayeni/worker:__TAG__
+        command: ["python", "worker.py", "redis-canary-service", "rng-canary-service", "hasher-canary-service"]
         ports:
         - containerPort: 80
-        command: ["python", "worker.py", "-canary-service"]
       nodeSelector:
         app: first  

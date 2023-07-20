@@ -14,25 +14,24 @@ else:
     logging.basicConfig(level=logging.INFO)
     logging.getLogger("requests").setLevel(logging.WARNING)
 
-def initialize_redis(suffix=None):
-    redis_server = "redis"+suffix
-    redis = Redis(redis_server)
-    return redis
 
-def get_random_bytes(suffix=None):
-    r = requests.get("http://rng"+suffix+"/32")
+redis = Redis(sys.argv[1])
+
+
+def get_random_bytes():
+    r = requests.get("http://"+sys.argv[2]+"/32")
     return r.content
 
 
-def hash_bytes(data, suffix=None):
-    r = requests.post("http://hasher"+suffix+"/",
+def hash_bytes(data):
+    r = requests.post("http://"+sys.argv[3]+"/",
                       data=data,
                       headers={"Content-Type": "application/octet-stream"})
     hex_hash = r.text
     return hex_hash
 
 
-def work_loop(interval=1, suffix=None, redis_server):
+def work_loop(interval=1):
     deadline = 0
     loops_done = 0
     while True:
@@ -42,31 +41,28 @@ def work_loop(interval=1, suffix=None, redis_server):
             redis.incrby("hashes", loops_done)
             loops_done = 0
             deadline = time.time() + interval
-        work_once(suffix)
+        work_once()
         loops_done += 1
 
 
-def work_once(suffix=None, redis_server):
+def work_once():
     log.debug("Doing one unit of work")
     time.sleep(0.1)
-    random_bytes = get_random_bytes(suffix)
-    hex_hash = hash_bytes(random_bytes, suffix)
+    random_bytes = get_random_bytes()
+    hex_hash = hash_bytes(random_bytes)
     if not hex_hash.startswith('0'):
         log.debug("No coin found")
         return
     log.info("Coin found: {}...".format(hex_hash[:8]))
-    created = redis_server.hset("wallet", hex_hash, random_bytes)
+    created = redis.hset("wallet", hex_hash, random_bytes)
     if not created:
         log.info("We already had that coin")
 
 
 if __name__ == "__main__":
-    if sys.argv[1] != None:
-        suffix = sys.argv[1]
-    redis_server = initialize_redis(suffix)    
     while True:
         try:
-            work_loop(suffix, redis_server)
+            work_loop()
         except:
             log.exception("In work loop:")
             log.error("Waiting 10s and restarting.")

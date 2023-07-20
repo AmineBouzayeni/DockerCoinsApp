@@ -5,4 +5,4 @@ RUN pip install --no-cache-dir -r requirement.txt
 
 COPY worker/worker.py ./
 
-CMD ["python", "worker.py"]
+CMD ["python", "worker.py", "redis", "rng", "hasher"]
