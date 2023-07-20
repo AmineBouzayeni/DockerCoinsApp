@@ -220,7 +220,7 @@ jobs:
     - name: Update image tag & the number of canary replicas to 0 to delete it
       uses: cschleiden/replace-tokens@v1
       with:
-        files: '["hasher/hasher-canary-manifest-delete.yml", "rng/rng-canary-manifest-delete.yml", "redis_server/redis-canary-manifest-delete.yml", "worker/worker-canary-manifest-delete.yml", "webui/webui-canary-manifest-delete.yml"]'
+        files: '["hasher/hasher-canary-manifest-delete.yml", "rng/rng-canary-manifest-delete.yml", "redis_server/redis-canary-manifest-delete.yml", "worker/worker-canary-manifest-delete.yml", "front/webui-canary-manifest-delete.yml"]'
         tokenPrefix: __
         tokenSuffix: __
       env:
