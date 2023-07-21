@@ -36,4 +36,4 @@ spec:
         ports:
         - containerPort: 6379
       nodeSelector:
-        app: test    
+        app: second    

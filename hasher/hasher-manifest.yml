@@ -1,0 +1,63 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: hasher
+spec:
+  selector:
+    app: hasher
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hasher-deployment
+  labels:
+    app: hasher
+spec:
+  replicas: __REPLICAS__
+  selector:
+    matchLabels:
+      app: hasher
+  template:
+    metadata:
+      labels:
+        app: hasher
+    spec:
+      containers:
+      - name: hasher
+        image: mbouzayeni/hasher:__TAG__
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "30Mi"
+      nodeSelector:
+        app: first
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: redis-autoscaler
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: hasher-deployment
+  minReplicas: __REPLICAS__
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 100

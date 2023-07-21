@@ -8,4 +8,4 @@ RUN npm install
 
 COPY front/webui/ .
 
-CMD [ "npm", "--srvname=redis" "start" ]
+CMD [ "npm", "--srvname=redis", "start" ]
