@@ -146,7 +146,7 @@ jobs:
         gcloud container clusters get-credentials \
         ${{ env.CLUSTER_NAME }} --zone ${{ env.CLUSTER_ZONE }} --project ${{ env.PROJECT_NAME }}
 
-    - name: Update the image tag & the number of test replicas to 1
+    - name: Update the image tag
       uses: cschleiden/replace-tokens@v1
       with:
         files: '["manifests/test/*"]'
@@ -244,7 +244,7 @@ jobs:
         gcloud auth activate-service-account --key-file=${HOME}/gcloud.json
         gcloud container clusters get-credentials \
         ${{ env.CLUSTER_NAME }} --zone ${{ env.CLUSTER_ZONE }} --project ${{ env.PROJECT_NAME }}
-    - name: Fill replicas and tag in the Kubernetes manifest files
+    - name: Update tag in the Kubernetes manifest files
       uses: cschleiden/replace-tokens@v1
       with: 
         files: '["manifests/prod/*"]'
