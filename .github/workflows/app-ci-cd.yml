@@ -276,4 +276,4 @@ jobs:
         kubectl apply -f rng/rng-manifest.yml 
         kubectl apply -f redis_server/redis-manifest.yml 
         kubectl apply -f worker/worker-manifest.yml
-        kubectl apply -f front/webui-manifest.yml   
+        kubectl apply -f front/webui-manifest.yml
