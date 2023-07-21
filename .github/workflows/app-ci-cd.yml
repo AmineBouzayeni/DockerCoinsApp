@@ -212,7 +212,7 @@ jobs:
         kubectl delete deployment redis-deployment-test
         kubectl delete deployment rng-deployment-test
         kubectl delete deployment worker-deployment-test
-        kubectl delete deployment worker-deployment-test
+        kubectl delete deployment webui-deployment-test
         # Delete services
         kubectl delete svc hasher-test-service
         kubectl delete svc redis-test-service
