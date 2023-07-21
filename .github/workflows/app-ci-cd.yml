@@ -146,31 +146,18 @@ jobs:
         gcloud container clusters get-credentials \
         ${{ env.CLUSTER_NAME }} --zone ${{ env.CLUSTER_ZONE }} --project ${{ env.PROJECT_NAME }}
 
-    - name: copy the manifest file
-      run: |
-        cp hasher/hasher-canary-manifest.yml hasher/hasher-canary-manifest-delete.yml
-        cp rng/rng-canary-manifest.yml rng/rng-canary-manifest-delete.yml
-        cp redis_server/redis-canary-manifest.yml redis_server/redis-canary-manifest-delete.yml
-        cp worker/worker-canary-manifest.yml worker/worker-canary-manifest-delete.yml
-        cp front/webui-canary-manifest.yml front/webui-canary-manifest-delete.yml
-
-    - name: Update the image tag & the number of canary replicas to 1
+    - name: Update the image tag & the number of test replicas to 1
       uses: cschleiden/replace-tokens@v1
       with:
-        files: '["hasher/hasher-canary-manifest.yml", "rng/rng-canary-manifest.yml", "redis_server/redis-canary-manifest.yml", "worker/worker-canary-manifest.yml", "front/webui-canary-manifest.yml"]'
+        files: '["manifests/test/*"]'
         tokenPrefix: __
         tokenSuffix: __
       env:
         TAG: ${{ needs.BuildAndPushImage.outputs.imageTag }}
-        REPLICAS: 1
 
     - name: Deploy to the gke cluster
       run: |
-        kubectl apply -f hasher/hasher-canary-manifest.yml 
-        kubectl apply -f rng/rng-canary-manifest.yml
-        kubectl apply -f redis_server/redis-canary-manifest.yml
-        kubectl apply -f worker/worker-canary-manifest.yml
-        kubectl apply -f front/webui-canary-manifest.yml
+        kubectl apply -f manifests/test
 
     - name: Replace the URI in the test file
       uses: cschleiden/replace-tokens@v1
@@ -203,7 +190,7 @@ jobs:
         response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/)
         if [[ $response != 200 && $response != 302 ]]
           then
-            echo "Smoke test against the canary deployment failed againt / endpoint with code ${response}"
+            echo "Smoke test against the test deployment failed againt / endpoint with code ${response}"
             exit 1
           else
             echo "The smoke test againt / passed"  
@@ -211,30 +198,27 @@ jobs:
         response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/json)
         if [[ $response != 200 ]]
           then
-            echo "Smoke test against the canary deployment failed againt /json endpoint with code ${response}"
+            echo "Smoke test against the test deployment failed againt /json endpoint with code ${response}"
             exit 1
           else
             echo "The smoke test against /json passed"  
         fi
-
-    - name: Update image tag & the number of canary replicas to 0 to delete it
-      uses: cschleiden/replace-tokens@v1
-      with:
-        files: '["hasher/hasher-canary-manifest-delete.yml", "rng/rng-canary-manifest-delete.yml", "redis_server/redis-canary-manifest-delete.yml", "worker/worker-canary-manifest-delete.yml", "front/webui-canary-manifest-delete.yml"]'
-        tokenPrefix: __
-        tokenSuffix: __
-      env:
-        TAG: ${{ needs.BuildAndPushImage.outputs.imageTag }}
-        REPLICAS: 0
            
-    - name: Delete canary pods
+    - name: Delete test pods and services
       run: |
-        kubectl apply -f hasher/hasher-canary-manifest-delete.yml 
-        kubectl apply -f rng/rng-canary-manifest-delete.yml 
-        kubectl apply -f redis_server/redis-canary-manifest-delete.yml 
-        kubectl apply -f worker/worker-canary-manifest-delete.yml
-        kubectl apply -f front/webui-canary-manifest-delete.yml
-  
+        # Delete pods
+        echo "deleting pods"
+        kubectl delete deployment hasher-deployment-test
+        kubectl delete deployment redis-deployment-test
+        kubectl delete deployment rng-deployment-test
+        kubectl delete deployment worker-deployment-test
+        kubectl delete deployment worker-deployment-test
+        # Delete services
+        kubectl delete svc hasher-test-service
+        kubectl delete svc redis-test-service
+        kubectl delete svc rng-test-service
+        kubectl delete svc webui-test-service
+
   Deploy:
     name: Deploy production manifests to Kubernetes Cluster.
     runs-on: ubuntu-latest
@@ -263,17 +247,12 @@ jobs:
     - name: Fill replicas and tag in the Kubernetes manifest files
       uses: cschleiden/replace-tokens@v1
       with: 
-        files: '["hasher/hasher-manifest.yml", "rng/rng-manifest.yml", "redis_server/redis-manifest.yml", "worker/worker-manifest.yml", "front/webui-manifest.yml"]'
+        files: '["manifests/prod/*"]'
         tokenPrefix: __
         tokenSuffix: __
       env:
         TAG: ${{ needs.BuildAndPushImage.outputs.imageTag }}
-        REPLICAS: 1
             
     - name: Deploy to Kubernetes GKE cluster
       run: |
-        kubectl apply -f hasher/hasher-manifest.yml 
-        kubectl apply -f rng/rng-manifest.yml 
-        kubectl apply -f redis_server/redis-manifest.yml 
-        kubectl apply -f worker/worker-manifest.yml
-        kubectl apply -f front/webui-manifest.yml
+        kubectl apply -f manifests/prod

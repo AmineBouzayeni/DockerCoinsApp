@@ -1,11 +1,11 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: redis-canary-service
+  name: redis-test-service
 spec:
   type: NodePort
   selector:
-    app: redis-canary
+    app: redis-test
   ports:
   - protocol: TCP
     port: 6379
@@ -17,18 +17,18 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-deployment-canary
+  name: redis-deployment-test
   labels:
-    app: redis-canary
+    app: redis-test
 spec:
-  replicas: __REPLICAS__
+  replicas: 1
   selector:
     matchLabels:
-      app: redis-canary
+      app: redis-test
   template:
     metadata:
       labels:
-        app: redis-canary
+        app: redis-test
     spec:
       containers:
       - name: redis
