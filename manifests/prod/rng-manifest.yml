@@ -1,0 +1,63 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: rng
+spec:
+  selector:
+    app: rng
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rng-deployment
+  labels:
+    app: rng
+spec:
+  replicas: __REPLICAS__
+  selector:
+    matchLabels:
+      app: rng
+  template:
+    metadata:
+      labels:
+        app: rng
+    spec:
+      containers:
+      - name: rng
+        image: mbouzayeni/rng:__TAG__
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "30Mi"
+      nodeSelector:
+        app: first
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: rng-autoscaler
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rng-deployment
+  minReplicas: __REPLICAS__
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 100

@@ -1,0 +1,39 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: redis-test-service
+spec:
+  type: NodePort
+  selector:
+    app: redis-test
+  ports:
+  - protocol: TCP
+    port: 6379
+    targetPort: 6379
+    nodePort: 30003
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment-test
+  labels:
+    app: redis-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-test
+  template:
+    metadata:
+      labels:
+        app: redis-test
+    spec:
+      containers:
+      - name: redis
+        image: mbouzayeni/redis:__TAG__
+        ports:
+        - containerPort: 6379
+      nodeSelector:
+        app: second    

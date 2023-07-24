@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment-test
+  labels:
+    app: worker-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker-test
+  template:
+    metadata:
+      labels:
+        app: worker-test
+    spec:
+      containers:
+      - name: worker
+        image: mbouzayeni/worker:__TAG__
+        command: ["python", "worker.py", "redis-test-service", "rng-test-service", "hasher-test-service"]
+        ports:
+        - containerPort: 80
+      nodeSelector:
+        app: first  

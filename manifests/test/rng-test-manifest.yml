@@ -1,0 +1,39 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: rng-test-service
+spec:
+  type: NodePort
+  selector:
+    app: rng-test
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30002
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rng-deployment-test
+  labels:
+    app: rng-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rng-test
+  template:
+    metadata:
+      labels:
+        app: rng-test
+    spec:
+      containers:
+      - name: rng
+        image: mbouzayeni/rng:__TAG__
+        ports:
+        - containerPort: 80
+      nodeSelector:
+        app: second  

@@ -1,0 +1,40 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: webui-test-service
+spec:
+  type: NodePort
+  selector:
+    app: webui-test
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30004
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webui-deployment-test
+  labels:
+    app: webui-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webui-test
+  template:
+    metadata:
+      labels:
+        app: webui-test
+    spec:
+      containers:
+      - name: webui
+        image: mbouzayeni/webui:__TAG__
+        command: ["npm", "--srvname=redis-test-service", "start"]
+        ports:
+        - containerPort: 80
+      nodeSelector:
+        app: second 
