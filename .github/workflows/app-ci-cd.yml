@@ -69,6 +69,7 @@ jobs:
           docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/redis:${{ steps.calculate_tag.outputs.tag }}" redis_server/
           docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/worker:${{ steps.calculate_tag.outputs.tag }}" worker/
           docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/webui:${{ steps.calculate_tag.outputs.tag }}" front/
+          
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v0.6.0'
