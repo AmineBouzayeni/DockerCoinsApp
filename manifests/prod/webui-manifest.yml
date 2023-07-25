@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: mbouzayeni/webui:__TAG__
+        image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/webui:__TAG__
         ports:
         - containerPort: 80
         resources:

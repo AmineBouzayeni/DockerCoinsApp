@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: worker
-        image: mbouzayeni/worker:__TAG__
+        image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/worker:__TAG__
         command: ["python", "worker.py", "redis-test-service", "rng-test-service", "hasher-test-service"]
         ports:
         - containerPort: 80

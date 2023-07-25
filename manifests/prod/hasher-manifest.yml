@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: hasher
-        image: mbouzayeni/hasher:__TAG__
+        image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/hasher:__TAG__
         ports:
         - containerPort: 80
         resources:
