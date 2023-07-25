@@ -19,7 +19,7 @@ metadata:
   labels:
     app: hasher
 spec:
-  replicas: __REPLICAS__
+  replicas: 1
   selector:
     matchLabels:
       app: hasher
@@ -52,7 +52,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: hasher-deployment
-  minReplicas: __REPLICAS__
+  minReplicas: 1
   maxReplicas: 4
   metrics:
   - type: Resource

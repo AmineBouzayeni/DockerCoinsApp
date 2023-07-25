@@ -21,7 +21,7 @@ metadata:
   labels:
     app: webui
 spec:
-  replicas: __REPLICAS__
+  replicas: 1
   selector:
     matchLabels:
       app: webui
@@ -54,7 +54,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: web-deployment
-  minReplicas: __REPLICAS__
+  minReplicas: 1
   maxReplicas: 4
   metrics:
   - type: Resource

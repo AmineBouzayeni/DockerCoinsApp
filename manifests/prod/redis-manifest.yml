@@ -19,7 +19,7 @@ metadata:
   labels:
     app: redis
 spec:
-  replicas: __REPLICAS__
+  replicas: 1
   selector:
     matchLabels:
       app: redis
@@ -52,7 +52,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: redis-server-deployment
-  minReplicas: __REPLICAS__
+  minReplicas: 1
   maxReplicas: 4
   metrics:
   - type: Resource
