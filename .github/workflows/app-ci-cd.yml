@@ -235,6 +235,7 @@ jobs:
           tokenPrefix: __
           tokenSuffix: __
         env:
+          IP: ${{ env.TEST_NODE_IP }}
           REDIS_TEST_PORT: ${{ env.REDIS_TEST_PORT }}
         
       - name: Run redis server component smoke tests
