@@ -180,9 +180,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@master
 
+      - name: Replace the URI in the test file
+        uses: cschleiden/replace-tokens@v1
+        with:
+          files: '["hasher/tests/smoke_test.rb"]'
+          tokenPrefix: __
+          tokenSuffix: __
+        env:
+          IP: ${{ env.TEST_NODE_IP }}
+          HASHER_TEST_PORT: ${{ env.HASHER_TEST_PORT }} 
+      
       - name: Run the hasher component smoke tests
         run: |
           ruby hasher/tests/smoke_test.rb
+
   RunRngTests:
     needs: DeployTestingServices
     name: Run smoke tests on the Rng component
@@ -190,13 +201,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@master
+    
+      - name: Replace the URI in the test file
+        uses: cschleiden/replace-tokens@v1
+        with:
+          files: '["rng/tests/smoke_test.py"]'
+          tokenPrefix: __
+          tokenSuffix: __
+        env:
+          IP: ${{ env.TEST_NODE_IP }}
+          RNG_TEST_PORT: ${{ env.RNG_TEST_PORT }}
+      
       - name: Run the rng component smoke tests
         run: |
           echo "Installing some prerequisite to run tests"
           pip install pytest
 
           echo "Running Smoke Tests for the Rng component"
-          cd ../rng && pytest 
+          cd ../rng && pytest
+
   RunRedisServerTests:
     needs: DeployTestingServices
     name: Run smoke tests on Redis Server
@@ -204,6 +227,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@master
+      
+      - name: Replace the URI in the test file
+        uses: cschleiden/replace-tokens@v1
+        with:
+          files: '["redis_server/tests/smoke_test.py"]'
+          tokenPrefix: __
+          tokenSuffix: __
+        env:
+          REDIS_TEST_PORT: ${{ env.REDIS_TEST_PORT }}
+        
       - name: Run redis server component smoke tests
         run: |
           echo "Installing some prerequisite to run tests"
@@ -211,6 +244,7 @@ jobs:
           
           echo "Running Smoke Tests for Redis Server component"
           cd redis_server/ && pytest
+
   RunWebUIIntegrationTests:
     needs: [RunHasherTests, RunRngTests, RunRedisServerTests]
     name: Run webui component integration tests
