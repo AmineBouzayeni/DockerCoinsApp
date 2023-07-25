@@ -218,7 +218,7 @@ jobs:
           pip install pytest
 
           echo "Running Smoke Tests for the Rng component"
-          cd ../rng && pytest
+          cd rng && pytest
 
   RunRedisServerTests:
     needs: DeployTestingServices
