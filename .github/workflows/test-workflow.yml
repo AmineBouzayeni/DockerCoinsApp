@@ -1,0 +1,47 @@
+name: Test workflow
+run-name: Test workflow
+on: 
+    push:
+        branches:
+            - 'main'
+            - 'feature/**'
+    release:
+        types: [created, published]
+
+permissions: write-all
+jobs:
+    Test-meta-tag:
+        name: Test meta tag
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@master
+            - name: Get current version
+              id: get_current_version
+              run: |
+                current_version=$(cat VERSION)
+                echo "currentVersion=$(cat VERSION)" >> $GITHUB_OUTPUT
+            - name: Create Release
+              id: create_release
+              uses: actions/create-release@latest
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+              with:
+                tag_name: ${{ steps.get_current_version.outputs.currentVersion }}
+                release_name: Release ${{ steps.get_current_version.outputs.currentVersion }}
+                body: |
+                  App version ${{ steps.get_current_version.outputs.currentVersion }}.
+                draft: false
+                prerelease: false
+            - name: Docker meta
+              id: meta
+              uses: docker/metadata-action@v4
+              with:
+                images: app/test
+                tags: |
+                    type=ref,event=branch
+                    type=semver,pattern={{version}}
+            - name: Display tags  
+              run: |
+                echo "${{ steps.meta.outputs.tags }}"
+
