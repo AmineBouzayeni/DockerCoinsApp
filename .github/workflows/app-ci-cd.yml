@@ -5,7 +5,7 @@ env:
   CLUSTER_NAME: dockercoins-cluster-teo
   CLUSTER_ZONE: europe-west1-b
   PROJECT_NAME: teolia-school-devops
-  TEST_NODE_IP: "35.195.191.201"
+  TEST_NODE_IP: "146.148.118.137"
   HASHER_TEST_PORT: "30001"
   RNG_TEST_PORT: "30002"
   REDIS_TEST_PORT: "30003"
@@ -120,8 +120,8 @@ jobs:
       imageTag: ${{ steps.calculate_tag.outputs.tag }}
       currentBranch: ${{ steps.current_branch.outputs.branch }}
 
-  Test:
-    name: Run Smoke/Unit Tests.
+  DeployTestingServices:
+    name: Deploy testing instances of the services.
     runs-on: ubuntu-latest
     needs: BuildAndPushImage
     steps:
@@ -172,38 +172,76 @@ jobs:
         REDIS_TEST_PORT: ${{ env.REDIS_TEST_PORT }}
         WEBUI_TEST_PORT: ${{ env.WEBUI_TEST_PORT }}
 
-    - name: Run tests
-      run: |
-        echo "Installing some prerequisite to run tests"
-        pip install pytest redis
+  RunHasherTests:
+    needs: DeployTestingServices
+    name: Run smoke tests on the Hasher component
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
 
-        echo "Running Smoke Tests for the Hasher component"
-        ruby hasher/tests/smoke_test.rb
+      - name: Run the hasher component smoke tests
+        run: |
+          ruby hasher/tests/smoke_test.rb
+  RunRngTests:
+    needs: DeployTestingServices
+    name: Run smoke tests on the Rng component
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Run the rng component smoke tests
+        run: |
+          echo "Installing some prerequisite to run tests"
+          pip install pytest
 
-        echo "Running Smoke Tests for Redis Server component"
-        cd redis_server/ && pytest
-
-        echo "Running Smoke Tests for the Rng component"
-        cd ../rng && pytest
-
-        echo "Running Smoke Tests on the Webui component"
-        response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/)
-        if [[ $response != 200 && $response != 302 ]]
-          then
-            echo "Smoke test against the test deployment failed againt / endpoint with code ${response}"
-            exit 1
-          else
-            echo "The smoke test againt / passed"  
-        fi
-        response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/json)
-        if [[ $response != 200 ]]
-          then
-            echo "Smoke test against the test deployment failed againt /json endpoint with code ${response}"
-            exit 1
-          else
-            echo "The smoke test against /json passed"  
-        fi
-           
+          echo "Running Smoke Tests for the Rng component"
+          cd ../rng && pytest 
+  RunRedisServerTests:
+    needs: DeployTestingServices
+    name: Run smoke tests on Redis Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Run redis server component smoke tests
+        run: |
+          echo "Installing some prerequisite to run tests"
+          pip install pytest redis
+          
+          echo "Running Smoke Tests for Redis Server component"
+          cd redis_server/ && pytest
+  RunWebUIIntegrationTests:
+    needs: [RunHasherTests, RunRngTests, RunRedisServerTests]
+    name: Run webui component integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Run webui component integration tests
+        run: |
+          echo "Running Smoke Tests on the Webui component"
+          response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/)
+          if [[ $response != 200 && $response != 302 ]]
+            then
+              echo "Smoke test against the test deployment failed againt / endpoint with code ${response}"
+              exit 1
+            else
+              echo "The smoke test againt / passed"  
+          fi
+          response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/json)
+          if [[ $response != 200 ]]
+            then
+              echo "Smoke test against the test deployment failed againt /json endpoint with code ${response}"
+              exit 1
+            else
+              echo "The smoke test against /json passed"  
+          fi  
+  CleanUpTestDeployment:
+    needs: RunWebUIIntegrationTests
+    name: Delete the testing deployments and services
+    runs-on: ubuntu-latest
+    steps:       
     - name: Delete test pods and services
       run: |
         # Delete pods
@@ -222,7 +260,7 @@ jobs:
   Deploy:
     name: Deploy production manifests to Kubernetes Cluster.
     runs-on: ubuntu-latest
-    needs: [BuildAndPushImage, Test]
+    needs: RunWebUIIntegrationTests
     steps:
     - name: Checkout code
       uses: actions/checkout@master
