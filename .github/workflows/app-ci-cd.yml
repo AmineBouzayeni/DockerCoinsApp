@@ -64,7 +64,7 @@ jobs:
       - name: Docker build
         run: |
           docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/hasher:${{ steps.calculate_tag.outputs.tag }}" hasher/
-          docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/rng:${{ steps.calculate_tag.outputs.tag }}" hasher/
+          docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/rng:${{ steps.calculate_tag.outputs.tag }}" rng/
           docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/redis:${{ steps.calculate_tag.outputs.tag }}" redis_server/
           docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/worker:${{ steps.calculate_tag.outputs.tag }}" worker/
           docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/webui:${{ steps.calculate_tag.outputs.tag }}" front/
@@ -90,6 +90,8 @@ jobs:
           docker push "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/redis:${{ steps.calculate_tag.outputs.tag }}"
           docker push "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/worker:${{ steps.calculate_tag.outputs.tag }}"
           docker push "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/webui:${{ steps.calculate_tag.outputs.tag }}"
+    outputs:
+        imageTag: ${{ steps.calculate_tag.outputs.tag }}
 
   DeployTestingServices:
     name: Deploy testing instances of the services.
@@ -132,9 +134,7 @@ jobs:
         GAR_LOCATION: ${{ env.GAR_LOCATION }}
         PROJECT_NAME: ${{ env.PROJECT_NAME }}
         REPOSITORY: ${{ env.REPOSITORY }}  
-    - name: check the hasher manifest files
-      run: |
-        cat manifests/test/hasher-test-manifest.yml
+
     - name: Deploy to the gke cluster
       run: |
         kubectl apply -f manifests/test
@@ -231,8 +231,6 @@ jobs:
     name: Run webui component integration tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@master
       - name: Run webui component integration tests
         run: |
           echo "Running Smoke Tests on the Webui component"
@@ -297,7 +295,7 @@ jobs:
   Deploy:
     name: Deploy production manifests to Kubernetes Cluster.
     runs-on: ubuntu-latest
-    needs: [RunHasherTests, RunRngTests, RunRedisServerTests,  RunWebUIIntegrationTests]
+    needs: [BuildAndPushImage, RunHasherTests, RunRngTests, RunRedisServerTests,  RunWebUIIntegrationTests]
     steps:
     - name: Checkout code
       uses: actions/checkout@master
