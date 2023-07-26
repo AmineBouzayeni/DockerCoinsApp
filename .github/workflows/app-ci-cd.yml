@@ -292,6 +292,7 @@ jobs:
     name: Deploy production manifests to Kubernetes Cluster.
     runs-on: ubuntu-latest
     needs: [BuildAndPushImage, RunHasherTests, RunRngTests, RunRedisServerTests,  RunWebUIIntegrationTests]
+    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
     - name: Checkout code
       uses: actions/checkout@master
