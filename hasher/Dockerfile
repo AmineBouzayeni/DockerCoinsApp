@@ -3,10 +3,10 @@ FROM ruby:3.2.2-alpine3.18
 
 RUN apk update && apk add --no-cache build-base
 
-COPY hasher/Gemfile hasher/Gemfile.lock ./
+COPY Gemfile Gemfile.lock ./
 
 RUN bundle install
 
-COPY hasher/hasher.rb .
+COPY hasher.rb .
 
 CMD ["ruby", "./hasher.rb"]

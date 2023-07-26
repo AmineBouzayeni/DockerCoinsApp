@@ -19,7 +19,7 @@ metadata:
   labels:
     app: rng
 spec:
-  replicas: __REPLICAS__
+  replicas: 1
   selector:
     matchLabels:
       app: rng
@@ -30,7 +30,7 @@ spec:
     spec:
       containers:
       - name: rng
-        image: mbouzayeni/rng:__TAG__
+        image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/rng:__TAG__
         ports:
         - containerPort: 80
         resources:
@@ -52,7 +52,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: rng-deployment
-  minReplicas: __REPLICAS__
+  minReplicas: 1
   maxReplicas: 4
   metrics:
   - type: Resource

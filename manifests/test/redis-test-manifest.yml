@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: redis
-        image: mbouzayeni/redis:__TAG__
+        image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/redis:__TAG__
         ports:
         - containerPort: 6379
       nodeSelector:
