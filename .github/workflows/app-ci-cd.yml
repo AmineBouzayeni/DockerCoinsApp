@@ -117,8 +117,6 @@ jobs:
         token_format: 'access_token'
 
     - name: Authenticate to GKE cluster
-      env:
-        GCLOUD_KEY: ${{ secrets.GCLOUD_KEY }}
       run: |   
         gcloud container clusters get-credentials \
         ${{ env.CLUSTER_NAME }} --zone ${{ env.CLUSTER_ZONE }} --project ${{ env.PROJECT_NAME }}
@@ -271,8 +269,6 @@ jobs:
         token_format: 'access_token'
     
     - name: Authenticate to GKE cluster
-      env:
-        GCLOUD_KEY: ${{ secrets.GCLOUD_KEY }}
       run: |   
         gcloud container clusters get-credentials \
         ${{ env.CLUSTER_NAME }} --zone ${{ env.CLUSTER_ZONE }} --project ${{ env.PROJECT_NAME }}
@@ -302,8 +298,18 @@ jobs:
         with:
           repository: 'AmineBouzayeni/prod-manifests'
       - name: Update tag in the Kubernetes manifest files
+        env:
+          GA_KEY: ${{ secrets.GA_KEY }}  
         run: |
-          git config --global user.email "mohamed-amine.bouzayeni@teolia.fr"
+          git remote -v
+          mkdir ~/.ssh
+          echo "$GA_KEY" > ~/.ssh/id_ed25519
+          chmod 400 ~/.ssh/id_ed25519
+          eval `ssh-agent -s`
+          ssh-add ~/.ssh/id_ed25519
+          git remote set-url origin git@github.com:AmineBouzayeni/prod-manifests.git
+          git remote -v
+          git config --global user.name "runner"
           sed -i '/europe-west1-docker.pkg.dev/c\europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/hasher:${{ needs.BuildAndPushImage.outputs.imageTag }}' manifests/hasher-manifest.yml
           sed -i '/europe-west1-docker.pkg.dev/c\europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/redis:${{ needs.BuildAndPushImage.outputs.imageTag }}' manifests/redis-manifest.yml
           sed -i '/europe-west1-docker.pkg.dev/c\europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/rng:${{ needs.BuildAndPushImage.outputs.imageTag }}' manifests/rng-manifest.yml
