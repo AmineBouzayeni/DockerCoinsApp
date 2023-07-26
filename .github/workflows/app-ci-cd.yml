@@ -310,11 +310,11 @@ jobs:
           git remote set-url origin git@github.com:AmineBouzayeni/prod-manifests.git
           git remote -v
           git config --global user.name "runner"
-          sed -i '/europe-west1-docker.pkg.dev/c\europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/hasher:${{ needs.BuildAndPushImage.outputs.imageTag }}' manifests/hasher-manifest.yml
-          sed -i '/europe-west1-docker.pkg.dev/c\europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/redis:${{ needs.BuildAndPushImage.outputs.imageTag }}' manifests/redis-manifest.yml
-          sed -i '/europe-west1-docker.pkg.dev/c\europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/rng:${{ needs.BuildAndPushImage.outputs.imageTag }}' manifests/rng-manifest.yml
-          sed -i '/europe-west1-docker.pkg.dev/c\europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/worker:${{ needs.BuildAndPushImage.outputs.imageTag }}' manifests/worker-manifest.yml
-          sed -i '/europe-west1-docker.pkg.dev/c\europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/webui:${{ needs.BuildAndPushImage.outputs.imageTag }}' manifests/webui-manifest.yml
+          sed -i -e "/^\([[:space:]]*image: \).*/s//\1europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/hasher:${{ needs.BuildAndPushImage.outputs.imageTag }}/" manifests/hasher-manifest.yml
+          sed -i -e "/^\([[:space:]]*image: \).*/s//\1europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/redis:${{ needs.BuildAndPushImage.outputs.imageTag }}/" manifests/redis-manifest.yml
+          sed -i -e "/^\([[:space:]]*image: \).*/s//\1europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/rng:${{ needs.BuildAndPushImage.outputs.imageTag }}/" manifests/rng-manifest.yml
+          sed -i -e "/^\([[:space:]]*image: \).*/s//\1europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/worker:${{ needs.BuildAndPushImage.outputs.imageTag }}/" manifests/worker-manifest.yml
+          sed -i -e "/^\([[:space:]]*image: \).*/s//\1europe-west1-docker.pkg.dev\/teolia-school-devops\/teolia-school-amineb\/webui:${{ needs.BuildAndPushImage.outputs.imageTag }}/" manifests/webui-manifest.yml
           git add -A
           git commit -m "Update image tag to use ${{ needs.BuildAndPushImage.outputs.imageTag }}"
           git push origin main
