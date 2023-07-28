@@ -5,7 +5,6 @@ env:
   CLUSTER_NAME: dockercoins-cluster-teo
   CLUSTER_ZONE: europe-west1-b
   PROJECT_NAME: teolia-school-devops
-  TEST_NODE_IP: "34.77.159.73"
   HASHER_TEST_PORT: "30001"
   RNG_TEST_PORT: "30002"
   REDIS_TEST_PORT: "30003"
@@ -144,7 +143,7 @@ jobs:
         tokenPrefix: __
         tokenSuffix: __
       env:
-        IP: ${{ env.TEST_NODE_IP }}
+        IP: ${{ vars.SECOND_POOL_NODE_IP }}
         HASHER_TEST_PORT: ${{ env.HASHER_TEST_PORT }}
         RNG_TEST_PORT: ${{ env.RNG_TEST_PORT }}
         REDIS_TEST_PORT: ${{ env.REDIS_TEST_PORT }}
@@ -165,7 +164,7 @@ jobs:
           tokenPrefix: __
           tokenSuffix: __
         env:
-          IP: ${{ env.TEST_NODE_IP }}
+          IP: ${{ vars.SECOND_POOL_NODE_IP }}
           HASHER_TEST_PORT: ${{ env.HASHER_TEST_PORT }} 
       
       - name: Run the hasher component smoke tests
@@ -187,7 +186,7 @@ jobs:
           tokenPrefix: __
           tokenSuffix: __
         env:
-          IP: ${{ env.TEST_NODE_IP }}
+          IP: ${{ vars.SECOND_POOL_NODE_IP }}
           RNG_TEST_PORT: ${{ env.RNG_TEST_PORT }}
       
       - name: Run the rng component smoke tests
@@ -213,7 +212,7 @@ jobs:
           tokenPrefix: __
           tokenSuffix: __
         env:
-          IP: ${{ env.TEST_NODE_IP }}
+          IP: ${{ vars.SECOND_POOL_NODE_IP }}
           REDIS_TEST_PORT: ${{ env.REDIS_TEST_PORT }}
         
       - name: Run redis server component smoke tests
@@ -232,7 +231,7 @@ jobs:
       - name: Run webui component integration tests
         run: |
           echo "Running Smoke Tests on the Webui component"
-          response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/)
+          response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ vars.SECOND_POOL_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/)
           if [[ $response != 200 && $response != 302 ]]
             then
               echo "Smoke test against the test deployment failed againt / endpoint with code ${response}"
@@ -240,7 +239,7 @@ jobs:
             else
               echo "The smoke test againt / passed"  
           fi
-          response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ env.TEST_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/json)
+          response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ vars.SECOND_POOL_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/json)
           if [[ $response != 200 ]]
             then
               echo "Smoke test against the test deployment failed againt /json endpoint with code ${response}"
