@@ -5,7 +5,7 @@ env:
   CLUSTER_NAME: dockercoins-cluster-teo
   CLUSTER_ZONE: europe-west1-b
   PROJECT_NAME: teolia-school-devops
-  TEST_NODE_IP: "35.205.50.30"
+  TEST_NODE_IP: "34.77.159.73"
   HASHER_TEST_PORT: "30001"
   RNG_TEST_PORT: "30002"
   REDIS_TEST_PORT: "30003"
