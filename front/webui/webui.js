@@ -57,7 +57,7 @@ app.get('/json', function(req, res) {
 
 app.use(express.static('files'));
 
-app.listen(80, function() {
-  console.log('WEBUI running on port 80');
+app.listen(1024, function() {
+  console.log('WEBUI running on port 1024');
 });
 
