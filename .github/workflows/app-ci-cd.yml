@@ -134,6 +134,10 @@ jobs:
         PROJECT_NAME: ${{ env.PROJECT_NAME }}
         REPOSITORY: ${{ env.REPOSITORY }}  
 
+    - name: Create test namespace
+      run: |
+          kubectl apply -f manifests/test/test-namespace.yml
+    
     - name: Deploy to the gke cluster
       run: |
         kubectl apply -f manifests/test
@@ -278,16 +282,16 @@ jobs:
       run: |
         # Delete pods
         echo "deleting pods"
-        kubectl delete deployment hasher-deployment-test
-        kubectl delete deployment redis-deployment-test
-        kubectl delete deployment rng-deployment-test
-        kubectl delete deployment worker-deployment-test
-        kubectl delete deployment webui-deployment-test
+        kubectl delete deployment --namespace test hasher-deployment-test 
+        kubectl delete deployment --namespace test redis-deployment-test
+        kubectl delete deployment --namespace test rng-deployment-test
+        kubectl delete deployment --namespace test worker-deployment-test
+        kubectl delete deployment --namespace test webui-deployment-test
         # Delete services
-        kubectl delete svc hasher-test-service
-        kubectl delete svc redis-test-service
-        kubectl delete svc rng-test-service
-        kubectl delete svc webui-test-service
+        kubectl delete svc --namespace test hasher-test-service
+        kubectl delete svc --namespace test redis-test-service
+        kubectl delete svc --namespace test rng-test-service
+        kubectl delete svc --namespace test webui-test-service
         
   Deploy:
     name: Deploy production manifests to Kubernetes Cluster.
@@ -331,6 +335,10 @@ jobs:
         PROJECT_NAME: ${{ env.PROJECT_NAME }}
         REPOSITORY: ${{ env.REPOSITORY }}  
             
+    - name: Create app-backend app-front namespaces
+      run: |
+          kubectl apply -f manifests/prod/app-namespace.yml
+        
     - name: Deploy to Kubernetes GKE cluster
       run: |
         kubectl apply -f manifests/prod

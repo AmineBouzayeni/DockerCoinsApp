@@ -2,6 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: hasher
+  namespace: app
 spec:
   selector:
     app: hasher
@@ -16,6 +17,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hasher-deployment
+  namespace: app
   labels:
     app: hasher
 spec:
@@ -46,7 +48,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: redis-autoscaler
-  namespace: default
+  namespace: app
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

@@ -2,6 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: webui-test-service
+  namespace: test
 spec:
   type: NodePort
   selector:
@@ -18,6 +19,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: webui-deployment-test
+  namespace: test
   labels:
     app: webui-test
 spec:

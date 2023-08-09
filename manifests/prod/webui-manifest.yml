@@ -2,6 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: webui-service
+  namespace: app
 spec:
   selector:
     app: webui
@@ -16,6 +17,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web-deployment
+  namespace: app
   labels:
     app: webui
 spec:
@@ -46,7 +48,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: web-autoscaler
-  namespace: default
+  namespace: app
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
