@@ -7,8 +7,8 @@ spec:
     app: webui
   ports:
   - protocol: TCP
-    port: 80
-    targetPort: 80
+    port: 1024
+    targetPort: 1024
 
 ---    
 
@@ -32,7 +32,7 @@ spec:
       - name: web
         image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/webui:__TAG__
         ports:
-        - containerPort: 80
+        - containerPort: 1024
         resources:
           requests:
             cpu: "100m"
