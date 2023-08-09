@@ -33,7 +33,7 @@ spec:
       containers:
       - name: webui
         image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/webui:__TAG__
-        command: ["npm", "--srvname=redis-test-service", "start"]
+        command: ["suid", "node", "&&", "npm", "--srvname=redis-test-service", "start"]
         ports:
         - containerPort: 80
       nodeSelector:
