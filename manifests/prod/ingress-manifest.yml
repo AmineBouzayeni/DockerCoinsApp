@@ -1,27 +1,24 @@
-  apiVersion: networking.gke.io/v1
-  kind: ManagedCertificate
-  metadata:
-    name: teolia-devops-cert
-  spec:
-    domains:
-      - teolia-school-devops.fr
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: managed-cert
+spec:
+  domains:
+    - dockercoins.teolia-school-devops.fr
 
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nginx-ingress
+  name: managed-cert-ingress
   annotations:
-    networking.gke.io/managed-certificates: "teolia-devops-cert"
+    kubernetes.io/ingress.global-static-ip-name: ingress-ip
+    networking.gke.io/managed-certificates: managed-cert
+    kubernetes.io/ingress.class: "gce"
 spec:
-  rules:
-  - host: teolia-school-devops.fr
-    http:
-      paths:
-      - pathType: ImplementationSpecific
-        backend:
-          service:
-            name: nginx-lb-service
-            port:
-              number: 80
+  defaultBackend:
+    service:
+      name: nginx-lb-service
+      port:
+        number: 80
