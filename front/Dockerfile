@@ -1,5 +1,7 @@
 FROM node:18.16.1-alpine AS build
 
+USER node
+
 WORKDIR /src
 
 COPY package*.json ./
@@ -26,6 +28,8 @@ RUN npm prune --production
 
 FROM node:18.16.1-alpine 
 
+USER node
+
 WORKDIR /project
 
 COPY package.json ./
@@ -34,6 +38,6 @@ COPY --from=build /src/node_modules ./node_modules
 
 COPY webui/ ./
 
-USER node
+USER root
 
 CMD [ "npm", "--srvname=redis", "start" ]
