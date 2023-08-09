@@ -56,8 +56,8 @@ app.get('/json', function(req, res) {
 });
 
 app.use(express.static('files'));
-
+// Using least privileged user node in docker image
+// to run the app can only be done running throught a port below 1024
 app.listen(1024, function() {
   console.log('WEBUI running on port 1024');
 });
-
