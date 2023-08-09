@@ -22,16 +22,6 @@
       "es2021": true
     },
     "extends": "google",
-    "overrides": [
-      {
-        "env": {
-          "node": true
-        },
-        "parserOptions": {
-          "sourceType": "script"
-        }
-      }
-    ],
     "parserOptions": {
       "ecmaVersion": "latest"
     },

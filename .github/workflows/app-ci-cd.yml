@@ -67,6 +67,7 @@ jobs:
           docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/redis:${{ steps.calculate_tag.outputs.tag }}" redis_server/
           docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/worker:${{ steps.calculate_tag.outputs.tag }}" worker/
           docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/webui:${{ steps.calculate_tag.outputs.tag }}" front/
+          docker build -t "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/nginx:${{ steps.calculate_tag.outputs.tag }}" front/nginx
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -89,6 +90,7 @@ jobs:
           docker push "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/redis:${{ steps.calculate_tag.outputs.tag }}"
           docker push "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/worker:${{ steps.calculate_tag.outputs.tag }}"
           docker push "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/webui:${{ steps.calculate_tag.outputs.tag }}"
+          docker push "$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/nginx:${{ steps.calculate_tag.outputs.tag }}"
     outputs:
         imageTag: ${{ steps.calculate_tag.outputs.tag }}
 
@@ -291,7 +293,6 @@ jobs:
     name: Deploy production manifests to Kubernetes Cluster.
     runs-on: ubuntu-latest
     needs: [BuildAndPushImage, RunHasherTests, RunRngTests, RunRedisServerTests,  RunWebUIIntegrationTests]
-    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
     - name: Checkout code
       uses: actions/checkout@master
