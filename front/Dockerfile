@@ -1,16 +1,15 @@
 FROM node:18.16.1-alpine AS build
 
-USER node
 
 WORKDIR /src
 
-COPY package*.json ./
+COPY --chown=node:node package*.json ./
 
 #npm ci works similarly to npm i, but skips the expensive dependency resolution step, and instead just installs the exact dependencies specified in your package-lock.json file. It’s basically a faster npm i for use in CI environments.
 
 RUN npm ci
 
-COPY webui/ ./
+COPY --chown=node:node webui/ ./
 
 # Run some formatting tests on the code
 
@@ -26,18 +25,16 @@ RUN npm prune --production
 
 # RUN npm run build
 
-FROM node:18.16.1-alpine 
-
-USER node
+FROM node:18.16.1-alpine
 
 WORKDIR /project
 
-COPY package.json ./
+COPY --chown=node:node package.json ./
 
-COPY --from=build /src/node_modules ./node_modules
+COPY --chown=node:node --from=build /src/node_modules ./node_modules
 
-COPY webui/ ./
+COPY --chown=node:node webui/ ./
 
-USER root
+USER node
 
 CMD [ "npm", "--srvname=redis", "start" ]
