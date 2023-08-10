@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/nginx:__TAG__
+        image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/nginx-test:__TAG__
         ports:
         - containerPort: 80
         resources:
