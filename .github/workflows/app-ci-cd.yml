@@ -1,6 +1,13 @@
 name: Dockercoins app CI/CD
 run-name: Dockercoins app CI/CD
-on: [push]
+on: 
+  push:
+    branches:
+      - 'main'
+      - 'feature/**'
+  pull_request:
+    types: [opened]    
+
 env:
   CLUSTER_NAME: dockercoins-cluster-teo
   CLUSTER_ZONE: europe-west1-b
