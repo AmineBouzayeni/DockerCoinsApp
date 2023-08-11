@@ -1,40 +1,25 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: webui-service
-  namespace: app
-spec:
-  selector:
-    app: webui
-  ports:
-  - protocol: TCP
-    port: 1024
-    targetPort: 1024
-
----    
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-deployment
+  name: nginx-deployment
   namespace: app
   labels:
-    app: webui
+    app: nginx
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: webui
+      app: nginx
   template:
     metadata:
       labels:
-        app: webui
+        app: nginx
     spec:
       containers:
       - name: web
-        image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/webui:__TAG__
+        image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/nginx:__TAG__
         ports:
-        - containerPort: 1024
+        - containerPort: 80
         resources:
           requests:
             cpu: "100m"
@@ -47,13 +32,13 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: web-autoscaler
+  name: nginx-autoscaler
   namespace: app
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: web-deployment
+    name: nginx-deployment
   minReplicas: 1
   maxReplicas: 10
   metrics:

@@ -1,41 +1,45 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: hasher-test-service
+  name: nginx-test-service
   namespace: test
 spec:
   type: NodePort
   selector:
-    app: hasher-test
+    app: nginx-test
   ports:
   - protocol: TCP
     port: 80
     targetPort: 80
-    nodePort: 30001
+    nodePort: 30005
 
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hasher-deployment-test
+  name: nginx-deployment-test
   namespace: test
   labels:
-    app: hasher-test
+    app: nginx-test
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: hasher-test
+      app: nginx-test
   template:
     metadata:
       labels:
-        app: hasher-test
+        app: nginx-test
     spec:
       containers:
-      - name: hasher
-        image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/hasher:__TAG__
+      - name: nginx
+        image: __GAR_LOCATION__-docker.pkg.dev/__PROJECT_NAME__/__REPOSITORY__/nginx-test:__TAG__
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "100Mi"
       nodeSelector:
-        app: second 
+        app: second

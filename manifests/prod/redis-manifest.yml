@@ -2,6 +2,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: redis
+  namespace: app
 spec:
   selector:
     app: redis
@@ -16,6 +17,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis-server-deployment
+  namespace: app
   labels:
     app: redis
 spec:
@@ -46,18 +48,18 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: redis-autoscaler
-  namespace: default
+  namespace: app
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: redis-server-deployment
   minReplicas: 1
-  maxReplicas: 4
+  maxReplicas: 10
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 100
+        averageUtilization: 50

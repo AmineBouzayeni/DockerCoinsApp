@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: worker-deployment
+  namespace: app
   labels:
     app: worker
 spec:
@@ -30,18 +31,18 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: worker-autoscaler
-  namespace: default
+  namespace: app
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: worker-deployment
   minReplicas: 1
-  maxReplicas: 4
+  maxReplicas: 10
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 100
+        averageUtilization: 50
