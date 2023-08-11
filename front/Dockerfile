@@ -11,21 +11,9 @@ COPY --chown=node:node package*.json webui/ ./
 RUN npm ci && \
     npm run lint ./webui.js
 
-# COPY --chown=node:node webui/ ./
-
-# Run some formatting tests on the code
-
-# RUN npm run lint ./webui.js 
-
 # Get rid of any development dependency
 RUN npm prune --production
 
-
-# FROM node:18.16.1-alpine
-
-# WORKDIR /project
-
-# RUN npm run build
 
 FROM node:18.16.1-alpine
 
@@ -34,8 +22,6 @@ WORKDIR /project
 COPY --chown=node:node package.json webui/ ./
 
 COPY --chown=node:node --from=build /src/node_modules ./node_modules
-
-# COPY --chown=node:node webui/ ./
 
 USER node
 
