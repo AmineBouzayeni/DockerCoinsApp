@@ -279,7 +279,7 @@ jobs:
     steps:       
     - name: Checkout code
       uses: actions/checkout@master
-      
+
     - name: Authenticate to GKE
       uses: "./.github/template/authenticate" 
       with:
@@ -309,6 +309,7 @@ jobs:
     name: Deploy production manifests to Kubernetes Cluster.
     runs-on: ubuntu-latest
     needs: [BuildAndPushImage, RunHasherTests, RunRngTests, RunRedisServerTests,  RunWebUIIntegrationTests, RunNginxSmokeTests]
+    if: ${{ github.ref == 'refs/heads/main' }}
     steps:
     - name: Checkout code
       uses: actions/checkout@master
