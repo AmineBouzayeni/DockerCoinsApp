@@ -22,5 +22,5 @@ runs:
       run: |
         echo $(gcloud artifacts docker tags list ${{ inputs.location }}-docker.pkg.dev/${{ inputs.registry }}/${{ inputs.repository }}/${{ inputs.image_name }} --filter='tag ~ ${{ inputs.version }}-' --format='json' --quiet) | jq -r '.[].tag' | while read -r tag ; do
           tag=$(echo $tag | cut -d"/" -f 10 ) 
-          gcloud artifacts docker images delete ${{ inputs.location }}-docker.pkg.dev/${{ inputs.registry }}/${{ inputs.repository }}/${{ inputs.image_name }}:$tag
+          gcloud artifacts docker images delete ${{ inputs.location }}-docker.pkg.dev/${{ inputs.registry }}/${{ inputs.repository }}/${{ inputs.image_name }}:$tag --quiet
         done
