@@ -1,0 +1,26 @@
+name: Login to Google Artifacts Registry
+
+# Were we can define the inputs that our action will accept
+inputs:
+  gcloud_key:
+    required: true
+  gar_location:
+    required: true            
+
+runs:
+  using: "composite" # A composite action allows you to combine multiple workflow steps within one action.
+  # Defining the action steps(Just one step to be simple)
+  steps:
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        credentials_json: '${{ inputs.gcloud_key }}'
+        token_format: 'access_token'
+
+    - name: 'Docker login'
+      uses: 'docker/login-action@v2'
+      with:
+        registry: '${{ inputs.gar_location }}-docker.pkg.dev'
+        username: 'oauth2accesstoken'
+        password: '${{ steps.auth.outputs.access_token }}'    

@@ -20,7 +20,7 @@ runs:
     - name: delete images
       shell: bash
       run: |
-        echo $(gcloud artifacts docker tags list ${{ inputs.location }}-docker.pkg.dev/${{ inputs.registry }}/${{ inputs.repository }}/${{ inputs.image_name }} --filter='tag ~ v0.0.1-' --format='json' --quiet) | jq -r '.[].tag' | while read tag ; do
+        echo $(gcloud artifacts docker tags list ${{ inputs.location }}-docker.pkg.dev/${{ inputs.registry }}/${{ inputs.repository }}/${{ inputs.image_name }} --filter='tag ~ ${{ inputs.version }}-' --format='json' --quiet) | jq -r '.[].tag' | while read tag ; do
           tag=$(echo $tag | cut -d"/" -f 10 ) 
           gcloud artifacts docker images delete ${{ inputs.location }}-docker.pkg.dev/${{ inputs.registry }}/${{ inputs.repository }}/${{ inputs.image_name }}:$tag
         done

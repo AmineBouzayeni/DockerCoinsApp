@@ -16,19 +16,16 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@master
 
-            - id: 'auth'
-              name: 'Authenticate to Google Cloud'
-              uses: 'google-github-actions/auth@v1'
+            - name: 'Login to Google Artifacts Registry'
+              uses: "./.github/template/login-docker" 
               with:
-                credentials_json: '${{ secrets.GCLOUD_KEY }}'
-                token_format: 'access_token'
-      
-            - name: 'Docker login'
-              uses: 'docker/login-action@v2'
-              with:
-                registry: '${{ env.GAR_LOCATION }}-docker.pkg.dev'
-                username: 'oauth2accesstoken'
-                password: '${{ steps.auth.outputs.access_token }}'
+                gcloud_key: ${{ secrets.GLOUD_KEY }}
+                gar_location: ${{ env.GAR_LOCATION }}
+
+            - id: release
+              run: |
+                currentVersion=$(cat VERSION)
+                echo "currentVersion=$(cat VERSION)" >> $GITHUB_OUTPUT
 
             - name: 'Remove webui intermediate images'
               uses: "./.github/template/curation" 
@@ -37,6 +34,7 @@ jobs:
                 location: ${{ env.GAR_LOCATION }}
                 registry: ${{ env.REGISTRY }}
                 repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}
             
             - name: 'Remove nginx intermediate images'
               uses: "./.github/template/curation" 
@@ -44,7 +42,8 @@ jobs:
                 image_name: "nginx"
                 location: ${{ env.GAR_LOCATION }}
                 registry: ${{ env.REGISTRY }}
-                repository: ${{ env.REPOSITORY }} 
+                repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }} 
             
             - name: 'Remove nginx-test intermediate images'
               uses: "./.github/template/curation" 
@@ -53,6 +52,7 @@ jobs:
                 location: ${{ env.GAR_LOCATION }}
                 registry: ${{ env.REGISTRY }}
                 repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}
                 
             - name: 'Remove rng intermediate images'
               uses: "./.github/template/curation" 
@@ -61,6 +61,7 @@ jobs:
                 location: ${{ env.GAR_LOCATION }}
                 registry: ${{ env.REGISTRY }}
                 repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}
                 
             - name: 'Remove hasher intermediate images'
               uses: "./.github/template/curation" 
@@ -68,7 +69,8 @@ jobs:
                 image_name: "hasher"
                 location: ${{ env.GAR_LOCATION }}
                 registry: ${{ env.REGISTRY }}
-                repository: ${{ env.REPOSITORY }} 
+                repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}
             
             - name: 'Remove worker intermediate images'
               uses: "./.github/template/curation" 
@@ -76,4 +78,5 @@ jobs:
                 image_name: "hasher"
                 location: ${{ env.GAR_LOCATION }}
                 registry: ${{ env.REGISTRY }}
-                repository: ${{ env.REPOSITORY }}    
+                repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}    
