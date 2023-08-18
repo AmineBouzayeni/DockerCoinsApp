@@ -1,11 +1,9 @@
 name: Curation workflow
 run-name: Curation workflow
-on: push # Will be changed to schedule trigger depending on the chosen policy
-# It will be: if pull_request == closed then process to eliminate all intermediate images with github-sha in their tag
-#
-# on:
-#    pull_request:
-#     - cloesd
+on:
+   pull_request:
+    types: [closed]
+
 env:
     GAR_LOCATION: europe-west1
     REGISTRY: teolia-school-devops
