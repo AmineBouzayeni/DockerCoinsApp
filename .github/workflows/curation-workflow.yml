@@ -1,0 +1,99 @@
+name: Curation workflow
+run-name: Curation workflow
+on:
+   pull_request:
+    types: [closed]
+
+env:
+    GAR_LOCATION: europe-west1
+    REGISTRY: teolia-school-devops
+    REPOSITORY: teolia-school-amineb
+jobs:
+    CleanUpDockerImages:
+        name: Clean up Docker Images
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@master
+
+            - id: 'auth'
+              name: 'Authenticate to Google Cloud'
+              uses: 'google-github-actions/auth@v1'
+              with:
+                credentials_json: '${{ secrets.GCLOUD_KEY }}'
+                token_format: 'access_token'
+
+            - id: release
+              run: |
+                currentVersion=$(cat VERSION)
+                echo "currentVersion=$(cat VERSION)" >> $GITHUB_OUTPUT
+                
+            - name: 'Docker login'
+              uses: 'docker/login-action@v2'
+              with:
+                registry: '${{ env.GAR_LOCATION }}-docker.pkg.dev'
+                username: 'oauth2accesstoken'
+                password: '${{ steps.auth.outputs.access_token }}'
+
+            - name: 'Remove webui intermediate images'
+              uses: "./.github/template/curation" 
+              with:
+                image_name: "webui"
+                location: ${{ env.GAR_LOCATION }}
+                registry: ${{ env.REGISTRY }}
+                repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}
+            
+            - name: 'Remove nginx intermediate images'
+              uses: "./.github/template/curation" 
+              with:
+                image_name: "nginx"
+                location: ${{ env.GAR_LOCATION }}
+                registry: ${{ env.REGISTRY }}
+                repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }} 
+            
+            - name: 'Remove nginx-test intermediate images'
+              uses: "./.github/template/curation" 
+              with:
+                image_name: "nginx-test"
+                location: ${{ env.GAR_LOCATION }}
+                registry: ${{ env.REGISTRY }}
+                repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}
+                
+            - name: 'Remove rng intermediate images'
+              uses: "./.github/template/curation" 
+              with:
+                image_name: "rng"
+                location: ${{ env.GAR_LOCATION }}
+                registry: ${{ env.REGISTRY }}
+                repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}
+                
+            - name: 'Remove hasher intermediate images'
+              uses: "./.github/template/curation" 
+              with:
+                image_name: "hasher"
+                location: ${{ env.GAR_LOCATION }}
+                registry: ${{ env.REGISTRY }}
+                repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}
+            
+            - name: 'Remove redis intermediate images'
+              uses: "./.github/template/curation" 
+              with:
+                image_name: "redis"
+                location: ${{ env.GAR_LOCATION }}
+                registry: ${{ env.REGISTRY }}
+                repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}
+            
+            - name: 'Remove worker intermediate images'
+              uses: "./.github/template/curation" 
+              with:
+                image_name: "worker"
+                location: ${{ env.GAR_LOCATION }}
+                registry: ${{ env.REGISTRY }}
+                repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}    
