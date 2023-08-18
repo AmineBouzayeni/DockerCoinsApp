@@ -82,10 +82,19 @@ jobs:
                 repository: ${{ env.REPOSITORY }}
                 version: ${{ steps.release.outputs.currentVersion }}
             
+            - name: 'Remove redis intermediate images'
+              uses: "./.github/template/curation" 
+              with:
+                image_name: "redis"
+                location: ${{ env.GAR_LOCATION }}
+                registry: ${{ env.REGISTRY }}
+                repository: ${{ env.REPOSITORY }}
+                version: ${{ steps.release.outputs.currentVersion }}
+            
             - name: 'Remove worker intermediate images'
               uses: "./.github/template/curation" 
               with:
-                image_name: "hasher"
+                image_name: "worker"
                 location: ${{ env.GAR_LOCATION }}
                 registry: ${{ env.REGISTRY }}
                 repository: ${{ env.REPOSITORY }}
