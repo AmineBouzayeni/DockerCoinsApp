@@ -1,8 +1,10 @@
 name: Curation workflow
 run-name: Curation workflow
-on: push # Will be changed to schedule trigger depending on the chosen policy
+#on: push # Will be changed to schedule trigger depending on the chosen policy
 # It will be: if pull_request == closed then process to eliminate all intermediate images with github-sha in their tag
-#   pull_request:
+#
+on:
+   pull_request:
 #        cloesd
 env:
     GAR_LOCATION: europe-west1
