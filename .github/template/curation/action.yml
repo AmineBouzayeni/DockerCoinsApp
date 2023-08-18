@@ -1,0 +1,26 @@
+name: Delete image
+
+# Were we can define the inputs that our action will accept
+inputs:
+  image_name:
+    required: true
+  location:
+    required: true
+  registry:
+    required: true
+  repository:
+    required: true
+  version:
+    required: true              
+
+runs:
+  using: "composite" # A composite action allows you to combine multiple workflow steps within one action.
+  # Defining the action steps(Just one step to be simple)
+  steps:
+    - name: delete images
+      shell: bash
+      run: |
+        echo $(gcloud artifacts docker tags list ${{ inputs.location }}-docker.pkg.dev/${{ inputs.registry }}/${{ inputs.repository }}/${{ inputs.image_name }} --filter='tag ~ v0.0.1-' --format='json' --quiet) | jq -r '.[].tag' | while read tag ; do
+          tag=$(echo $tag | cut -d"/" -f 10 ) 
+          gcloud artifacts docker images delete ${{ inputs.location }}-docker.pkg.dev/${{ inputs.registry }}/${{ inputs.repository }}/${{ inputs.image_name }}:$tag
+        done
