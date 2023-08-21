@@ -240,6 +240,7 @@ jobs:
           response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ vars.SECOND_POOL_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/)
           if [[ $response != 200 && $response != 302 ]]
             then
+              sleep 100
               echo "Smoke test against the test deployment failed againt / endpoint with code ${response}"
               exit 1
             else
@@ -265,6 +266,7 @@ jobs:
           response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ vars.SECOND_POOL_NODE_IP }}:${{ env.NGINX_TEST_PORT }}/)
           if [[ $response != 200 && $response != 302 ]]
             then
+              sleep 100
               echo "Smoke test against the test deployment failed againt / endpoint with code ${response}"
               exit 1
           else
