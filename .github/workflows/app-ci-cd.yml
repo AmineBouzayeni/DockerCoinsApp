@@ -237,10 +237,10 @@ jobs:
       - name: Run webui component integration tests
         run: |
           echo "Running Smoke Tests on the Webui component"
+          sleep 100
           response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ vars.SECOND_POOL_NODE_IP }}:${{ env.WEBUI_TEST_PORT }}/)
           if [[ $response != 200 && $response != 302 ]]
             then
-              sleep 120
               echo "Smoke test against the test deployment failed againt / endpoint with code ${response}"
               exit 1
             else
@@ -263,10 +263,10 @@ jobs:
       - name: Run webui component integration tests
         run: |
           echo "Running Smoke Tests on the Nginx component"
+          sleep 100
           response=$(curl -s -o /dev/null -w "%{http_code}"  http://${{ vars.SECOND_POOL_NODE_IP }}:${{ env.NGINX_TEST_PORT }}/)
           if [[ $response != 200 && $response != 302 ]]
             then
-              sleep 120
               echo "Smoke test against the test deployment failed againt / endpoint with code ${response}"
               exit 1
           else
