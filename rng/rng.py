@@ -2,11 +2,18 @@ from flask import Flask, Response
 import os
 import socket
 import time
+import logging
+from logging.config import dictConfig
+from flask.logging import default_handler
+
 
 app = Flask(__name__)
 
+app.logger.removeHandler(default_handler)
+
+
 # Enable debugging if the DEBUG environment variable is set and starts with Y
-app.debug = os.environ.get("DEBUG", "").lower().startswith('y')
+#app.debug = os.environ.get("DEBUG", "").lower().startswith('y')
 
 hostname = socket.gethostname()
 
@@ -28,4 +35,19 @@ def rng(how_many_bytes):
 
 
 if __name__ == "__main__":
+    dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '%(asctime)s - %(levelname)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'INFO',
+        'handlers': ['wsgi']
+        }
+        })
     app.run(host="0.0.0.0", port=80)
