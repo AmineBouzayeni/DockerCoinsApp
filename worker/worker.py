@@ -10,6 +10,7 @@ DEBUG = os.environ.get("DEBUG", "").lower().startswith("y")
 
 logging.config.fileConfig('logger.conf')
 
+
 log = logging.getLogger(__name__)
 if DEBUG:
     log = logging.getLogger('debug')
