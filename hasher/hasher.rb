@@ -12,7 +12,7 @@ logger.datetime_format = "%Y-%m-%d %H:%M:%S"
 
 
 logger.formatter = proc do |severity, datetime, progname, msg|
-    "#{datetime} - #{severity} - #{progname} - #{msg}\n"
+    "#{datetime} - #{severity} - #{msg}\n"
   end
 
 post '/' do
