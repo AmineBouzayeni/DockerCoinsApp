@@ -1,4 +1,5 @@
 import logging
+import logging.config
 import os
 from redis import Redis
 import requests
@@ -7,12 +8,14 @@ import sys
 
 DEBUG = os.environ.get("DEBUG", "").lower().startswith("y")
 
+logging.config.fileConfig('logger.conf')
+
+
 log = logging.getLogger(__name__)
 if DEBUG:
-    logging.basicConfig(level=logging.DEBUG)
+    log = logging.getLogger('debug')
 else:
-    logging.basicConfig(level=logging.INFO)
-    logging.getLogger("requests").setLevel(logging.WARNING)
+    log = logging.getLogger('root')
 
 
 redis = Redis(sys.argv[1])
@@ -36,7 +39,7 @@ def work_loop(interval=1):
     loops_done = 0
     while True:
         if time.time() > deadline:
-            log.info("{} units of work done, updating hash counter"
+            log.info("{} units of work done updating hash counter"
                      .format(loops_done))
             redis.incrby("hashes", loops_done)
             loops_done = 0
